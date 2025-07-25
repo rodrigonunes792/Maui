@@ -50,39 +50,6 @@ jobs:
           exit 1
         }
         
-    - name: Configure Project for APK
-      shell: pwsh
-      run: |
-        $projectFile = "${{ steps.find-project.outputs.project-path }}"
-        Write-Host "Configuring project: $projectFile"
-        
-        $content = Get-Content $projectFile -Raw
-        
-        if ($content -notmatch '<AndroidApplication>true</AndroidApplication>') {
-          Write-Host "Adding Android APK configuration..."
-          
-          $propertyGroupPattern = '(<PropertyGroup[^>]*>)'
-          if ($content -match $propertyGroupPattern) {
-            $androidProperties = @"
-                <OutputType>Exe</OutputType>
-                <AndroidApplication>true</AndroidApplication>
-                <AndroidPackageFormat>apk</AndroidPackageFormat>
-                <AndroidEnableAssemblyCompression>false</AndroidEnableAssemblyCompression>
-                <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-            "@
-            $replacement = "$1`n$androidProperties"
-            $content = $content -replace $propertyGroupPattern, $replacement
-            
-            Set-Content $projectFile -Value $content -Encoding UTF8
-            Write-Host "✅ Project configured for APK generation"
-          } else {
-            Write-Host "❌ Could not find PropertyGroup"
-            exit 1
-          }
-        } else {
-          Write-Host "✅ Project already configured for APK"
-        }
-        
     - name: Restore Dependencies
       run: dotnet restore "${{ steps.find-project.outputs.project-path }}"
       
