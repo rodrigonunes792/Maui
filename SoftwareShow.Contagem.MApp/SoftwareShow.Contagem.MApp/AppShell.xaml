@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SoftwareShow.Contagem.MApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:SoftwareShow.Contagem.MApp"
+    xmlns:pages="clr-namespace:SoftwareShow.Contagem.MApp.Pages"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Shell.FlyoutBehavior="Disabled" Title="SoftwareShow.Contagem.MApp" BackgroundColor="White" 
+    Shell.NavBarHasShadow="false" Shell.TitleColor="Black" Shell.ForegroundColor="Black" >
+
+    <Shell.Behaviors>
+        <toolkit:StatusBarBehavior
+            StatusBarColor="White"
+            StatusBarStyle="DarkContent"/>
+    </Shell.Behaviors>
+
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{ DataTemplate pages:LoginPage }"
+        Route="LoginPage"
+     />
+    <ShellContent Title="Settings" 
+                  ContentTemplate="{DataTemplate pages:SettingsPage}"
+                  Route="settings" />
+
+    <ShellContent Title="StoreSelection" 
+                 ContentTemplate="{DataTemplate pages:StoreSelectionPage}"
+                 Route="storeselection" />
+
+</Shell>

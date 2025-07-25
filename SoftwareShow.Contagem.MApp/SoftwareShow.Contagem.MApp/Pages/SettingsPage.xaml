@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SoftwareShow.Contagem.MApp.Pages.SettingsPage"
+             xmlns:controls ="clr-namespace:SoftwareShow.Contagem.MApp.Controls"
+              Shell.NavBarIsVisible="False" 
+             Title="Settings">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header Padrão -->
+        <controls:StandardHeader Grid.Row="0"
+                             Title="Configurações"
+                             ShowBackButton="True"
+                             BackClicked="OnBackClicked" />
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1" BackgroundColor="{StaticResource BackgroundColor}">
+            <StackLayout Padding="30,40" Spacing="30">
+
+                <!-- Seção API -->
+                <StackLayout Spacing="20">
+
+                    <!-- Título da seção -->
+                    <Label Text="Entre com os endereços das APIs"
+                           Style="{StaticResource DescriptionStyle}"
+                           FontSize="18"
+                           TextColor="{StaticResource TextColor}" />
+
+                    <!-- Campo API -->
+                    <StackLayout Spacing="5">
+                        <Border Style="{StaticResource EntryBorderStyle}"
+                                Margin="0">
+                            <Entry x:Name="ApiEntry"
+                                   Style="{StaticResource EntryStyle}"
+                                   Placeholder="API"
+                                   Text="{Binding ApiUrl}"
+                                   Keyboard="Url" />
+                        </Border>
+
+                        <!-- Texto de ajuda -->
+                        <Label Text="Ex: https://api.exemplo.com"
+                               TextColor="{StaticResource PlaceholderColor}"
+                               FontSize="12"
+                               Margin="5,2,0,0" />
+                    </StackLayout>
+
+                </StackLayout>
+
+                <!-- Botões -->
+                <StackLayout Spacing="15" Margin="0,40,0,0">
+
+                    <!-- Botão Salvar -->
+                    <Button Text="Salvar"
+                            Style="{StaticResource LoginButtonStyle}"
+                            Clicked="OnSaveClicked"
+                            x:Name="SaveButton" />
+
+                    <!-- Botão Cancelar -->
+                    <Button Text="Cancelar"
+                            BackgroundColor="{StaticResource BorderColor}"
+                            TextColor="{StaticResource TextColor}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="50"
+                            Clicked="OnCancelClicked" />
+
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Loading Overlay -->
+        <Grid x:Name="LoadingOverlay"
+              Grid.Row="0"
+              Grid.RowSpan="2"
+              BackgroundColor="Black"
+              Opacity="0.4"
+              IsVisible="False"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill">
+
+            <ActivityIndicator IsRunning="True"
+                             Color="White"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

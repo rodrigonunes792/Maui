@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SoftwareShow.Contagem.MApp.Pages.StoreSelectionPage"
+             xmlns:controls="clr-namespace:SoftwareShow.Contagem.MApp.Controls"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False"
+             Title="Seleção de Lojas">
+    
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header Padrão -->
+        <controls:StandardHeader Grid.Row="0"
+                               Title="Seleção de Lojas"
+                               ShowBackButton="True"
+                               BackClicked="OnBackClicked" />
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1" BackgroundColor="{StaticResource BackgroundColor}">
+            <StackLayout Spacing="0">
+
+                <!-- Seção Sincronização -->
+                <StackLayout BackgroundColor="{StaticResource WhiteColor}" 
+                           Padding="0,15,0,20">
+
+                    <Label Text="Ative ou desative atualização de tabelas"
+                           Style="{StaticResource SectionTitleStyle}"
+                           Margin="20,5,20,10" />
+
+                    <!-- Switch Sincronizar -->
+                    <Grid Margin="20,0" ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="Sincronizar dados"
+                               FontSize="16"
+                               TextColor="{StaticResource TextColor}"
+                               VerticalOptions="Center" />
+
+                        <Switch Grid.Column="1"
+                                x:Name="SyncSwitch"
+                                IsToggled="{Binding IsSyncEnabled}"
+                                OnColor="{StaticResource OnColor}"
+                                IsEnabled="True"
+                                ThumbColor="{StaticResource WhiteColor}" />
+                    </Grid>
+                </StackLayout>
+
+                <!-- Linha divisória -->
+                <BoxView Style="{StaticResource SeparatorLineStyle}" 
+                         Margin="0" />
+
+                <!-- Seção Seleção de Loja -->
+                <StackLayout BackgroundColor="{StaticResource BackgroundColor}" 
+                           Spacing="15">
+
+                    <Label Text="Selecione uma loja para continuar"
+                           Style="{StaticResource SectionTitleStyle}" />
+
+                    <!-- Campo de Pesquisa -->
+                    <Border Style="{StaticResource EntryBorderStyle}"
+                            Margin="20,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Entry x:Name="SearchEntry"
+                                   Grid.Column="0"
+                                   Style="{StaticResource SearchEntryStyle}"
+                                   Placeholder="Pesquisar"
+                                   Text="{Binding SearchText}"
+                                   TextChanged="OnSearchTextChanged" />
+
+                            <Image Grid.Column="1"
+                                   Source="search.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   VerticalOptions="Center"
+                                   Margin="0,0,10,0" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Lista de Lojas -->
+                    <StackLayout x:Name="StoresContainer" 
+                               Spacing="0"
+                               Margin="0,10,0,20">
+
+                        <!-- As lojas serão adicionadas dinamicamente -->
+
+                    </StackLayout>
+
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

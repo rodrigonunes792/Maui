@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="SoftwareShow.Contagem.MApp.Pages.LoginPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:SoftwareShow.Contagem.MApp.ViewModels"
+             x:DataType="viewmodels:LoginViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False"
+             Title="Login">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" 
+              BackgroundColor="{StaticResource WhiteColor}" 
+              Padding="20,15"
+              ColumnDefinitions="*,Auto">
+
+            <Label Grid.Column="0"
+                   Text="Aplicativo Contador"
+                   HorizontalOptions="Center"
+                   Style="{StaticResource HeaderTitleStyle}" />
+
+            <ImageButton Grid.Column="1" 
+                        Source="settings.svg" 
+                        HorizontalOptions="End"  
+                        HeightRequest="25" 
+                        WidthRequest="25"
+                        Clicked="OnSettingsClicked" />
+        </Grid>
+
+        <!-- Linha divisória -->
+        <BoxView Grid.Row="1" 
+                 Style="{StaticResource SeparatorLineStyle}"
+                 Margin="0" />
+
+        <!-- Content -->
+        <ScrollView Grid.Row="2" BackgroundColor="{StaticResource BackgroundColor}">
+            <Grid RowDefinitions="*,Auto" MinimumHeightRequest="500">
+
+                <!-- Espaço vazio -->
+                <StackLayout Grid.Row="0" />
+
+                <!-- Login Form -->
+                <StackLayout Grid.Row="1" 
+                           Padding="30,20,30,40" 
+                           Spacing="30" 
+                           VerticalOptions="End">
+
+                    <!-- Welcome Section -->
+                    <StackLayout Spacing="15">
+                        <Label Text="Bem vindo!"
+                               Style="{StaticResource MainTitleStyle}" />
+
+                        <Label Text="Login"
+                               Style="{StaticResource SubTitleStyle}" />
+
+                        <Label Text="Entre com login e senha para acessar."
+                               Style="{StaticResource DescriptionStyle}" />
+
+                        <BoxView Style="{StaticResource SeparatorLineStyle}"
+                                 Margin="0,20,0,0" />
+                    </StackLayout>
+
+                    <!-- Campos -->
+                    <StackLayout Spacing="25">
+
+                        <!-- Campo Usuário -->
+                        <Border Style="{StaticResource EntryBorderStyle}" Margin="0">
+                            <Entry x:Name="UsuarioEntry"
+                                   Style="{StaticResource EntryStyle}"
+                                   Placeholder="Usuário"
+                                   Text="{Binding Usuario}" />
+                        </Border>
+
+                        <!-- Campo Senha -->
+                        <Border Style="{StaticResource EntryBorderStyle}" Margin="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Entry x:Name="SenhaEntry"
+                                       Grid.Column="0"
+                                       Style="{StaticResource EntryStyle}"
+                                       Placeholder="Senha"
+                                       Text="{Binding Senha}"
+                                       IsPassword="True" />
+
+                                <ImageButton Grid.Column="1"
+                                            Source="eye"
+                                            HeightRequest="24"
+                                            WidthRequest="24"
+                                            BackgroundColor="Transparent"
+                                            Clicked="OnTogglePasswordClicked" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Botão Login -->
+                        <Button Text="Fazer login"
+                                Style="{StaticResource LoginButtonStyle}"
+                                Clicked="OnLoginClicked"
+                                Margin="0,20,0,0">
+                        </Button>
+
+                    </StackLayout>
+
+                </StackLayout>
+
+            </Grid>
+        </ScrollView>
+
+        <!-- Loading Overlay -->
+        <Grid BackgroundColor="Black"
+              Opacity="0.4"
+              IsVisible="{Binding IsLoading}"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill"
+              Grid.RowSpan="3">
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                             Color="White"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

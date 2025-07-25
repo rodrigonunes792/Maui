@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SoftwareShow.Contagem.MApp.Pages.EmpresaListPage"
+             xmlns:viewModels="clr-namespace:SoftwareShow.Contagem.MApp.ViewModels"
+             xmlns:models="clr-namespace:SoftwareShow.Contagem.MApp.Models"
+             Title="Empresas" Shell.NavBarIsVisible="True" Loaded="EmpresaListPage_Loaded"
+             x:DataType="viewModels:EmpresaListViewModel">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Text="Selecione uma de suas empresas. Utilize o campo abaixo para filtrar a lista" 
+               FontFamily="InterRegular" FontSize="16" Margin="15,0,15,0" HorizontalOptions="Start" />
+
+        <Frame Grid.Row="1" Style="{StaticResource EntryFrame}" Margin="10,10,10,10" >
+            <Entry x:Name="EntryFiltro" Style="{StaticResource DefaultEntry}" Placeholder="Nome ou Identificador" 
+                   TextChanged="EntryFiltro_TextChanged" />
+        </Frame>
+
+        <CollectionView Grid.Row="2" x:Name="CollectionViewEmpresas" ItemsSource="{Binding Empresas}" Margin="15,0,15,0"
+                        SelectionMode="Single" SelectedItem="{ Binding EmpresaSelecionada }">
+            <CollectionView.EmptyViewTemplate>
+                <DataTemplate>
+                    <Label Text="Nenhuma empresa encontrada"/>
+                </DataTemplate>
+            </CollectionView.EmptyViewTemplate>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Empresa">
+                    <VerticalStackLayout Padding="0,5,0,5">
+                        <Label Text="{ Binding Busca }"/>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal"/>
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="LightSkyBlue"></Setter>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="3" x:Name="ButtonAvancar" Text="Avançar" Style="{ StaticResource DefaultButton}" 
+                Margin="10,0,10,10" VerticalOptions="End" IsEnabled="{ Binding PodeAvancar }"/>
+
+
+    </Grid>
+
+</ContentPage>

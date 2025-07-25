@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SoftwareShow.Contagem.MApp.Controls.StandardHeader">
+    <Grid RowDefinitions="Auto,Auto">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" 
+              BackgroundColor="{StaticResource WhiteColor}" 
+              Padding="20,15"
+              ColumnDefinitions="Auto,*,Auto">
+
+            <!-- Botão Voltar -->
+            <ImageButton Grid.Column="0"
+                        x:Name="BackButton"
+                        Source="arrow_back"
+                        BackgroundColor="Transparent"
+                        WidthRequest="24"
+                        HeightRequest="24"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Center"
+                        Clicked="OnBackClicked"
+                        IsVisible="{Binding ShowBackButton}" />
+
+            <!-- Título -->
+            <Label Grid.Column="1"
+                   x:Name="TitleLabel"
+                   Text="{Binding Title}"
+                   Style="{StaticResource HeaderTitleStyle}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+
+            <!-- Botão de Ação (opcional) -->
+            <ImageButton Grid.Column="2"
+                        x:Name="ActionButton"
+                        Source="{Binding ActionIcon}"
+                        BackgroundColor="Transparent"
+                        WidthRequest="24"
+                        HeightRequest="24"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center"
+                        Clicked="OnActionClicked"
+                        IsVisible="{Binding ShowActionButton}" />
+        </Grid>
+
+        <!-- Linha divisória -->
+        <BoxView Grid.Row="1" 
+                 Style="{StaticResource SeparatorLineStyle}"
+                 Margin="0" />
+
+    </Grid>
+</ContentView>
