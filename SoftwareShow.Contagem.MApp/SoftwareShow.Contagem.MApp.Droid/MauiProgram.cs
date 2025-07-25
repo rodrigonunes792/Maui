@@ -13,8 +13,6 @@ namespace SoftwareShow.Contagem.MApp.Droid
 
 #if ANDROID
             builder.Services.AddTransient<IOrientationService, OrientationService>();
-            builder.Services.AddTransient<IQrCodeScanningService, QrCodeScanningService>();
-            builder.Services.AddTransient<ISpeechToTextService, SpeechToTextService>();
 
 
 #endif
