@@ -44,13 +44,6 @@
               ContentTemplate="{DataTemplate pages:ContagemPage}" 
               Route="ContagemPage" />
     
-    <ShellContent Title="ContagemItem" 
-           ContentTemplate="{DataTemplate pages:ContagemItemPage}" 
-           Route="ContagemItemPage" />
-
-    <ShellContent Title="PesquisaProduto" 
-         ContentTemplate="{DataTemplate pages:PesquisaProdutoPage}" 
-         Route="PesquisaProdutoPage" />
 
 
 

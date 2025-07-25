@@ -54,8 +54,7 @@ namespace SoftwareShow.Contagem.MApp
 
             builder.Services.AddTransient<ContagemViewModel>();
             builder.Services.AddTransient<ContagemPage>();
-            builder.Services.AddTransient<ContagemItemPage>();
-            builder.Services.AddTransient<PesquisaProdutoPage>();
+
             builder.Services.AddTransient<MenuPage>();
             builder.Services.AddTransient<MainPage>();
 
