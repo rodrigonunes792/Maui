@@ -1,143 +1,121 @@
 name: Build Android APK
 
+# Trigger do workflow - executa quando há push ou pull request na branch main
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
+  # Permite execução manual do workflow
   workflow_dispatch:
 
 jobs:
   build-android:
     runs-on: windows-latest
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    env:
+      BUILD_CONFIGURATION: Release
+      DOTNET_VERSION: '8.0.x'
       
-    - name: Setup .NET
+    steps:
+    # Checkout do código fonte
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    # Configurar .NET SDK
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
-        
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'microsoft'
-        java-version: '17'
-        
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        include-prerelease: false
+    
+    # Instalar workload do MAUI
     - name: Install MAUI Workload
       run: dotnet workload install maui
-      
-    - name: Find MAUI Project
-      id: find-project
-      shell: pwsh
+    
+    # Listar arquivos para debug (opcional)
+    - name: List project files
       run: |
-        Write-Host "Finding MAUI project..."
-        $projects = Get-ChildItem -Recurse -Filter "*.csproj" | Where-Object { 
-          $_.Name -like "*SoftwareShow.Contagem.MApp*" -and 
-          $_.Name -notlike "*Droid*" -and 
-          $_.Name -notlike "*iOS*" 
-        }
-        
-        if ($projects) {
-          $projectPath = $projects[0].FullName
-          $relativePath = $projectPath.Replace("$env:GITHUB_WORKSPACE\", "").Replace("\", "/")
-          Write-Host "Found project: $relativePath"
-          echo "project-path=$relativePath" >> $env:GITHUB_OUTPUT
-        } else {
-          Write-Host "No MAUI project found!"
-          exit 1
-        }
-        
-    - name: Restore Dependencies
-      run: dotnet restore "${{ steps.find-project.outputs.project-path }}"
-      
+        Write-Host "Listing solution files:"
+        Get-ChildItem -Recurse -Name "*.sln" | ForEach-Object { Write-Host $_ }
+        Write-Host "Listing project files:"
+        Get-ChildItem -Recurse -Name "*.csproj" | ForEach-Object { Write-Host $_ }
+      shell: pwsh
+    
+    # Restaurar dependências
+    - name: Restore dependencies
+      run: dotnet restore Contagem.sln --verbosity normal
+    
+    # Build do projeto Android
     - name: Build Android APK
       run: |
-        dotnet publish "${{ steps.find-project.outputs.project-path }}" ^
-          -f net8.0-android ^
-          -c Release ^
-          /p:AndroidPackageFormat=apk ^
-          /p:AndroidEnableAssemblyCompression=false ^
-          /p:AndroidLinkMode=SdkOnly
-          
-    - name: Find Generated APK
-      id: find-apk
+        dotnet publish SoftwareShow.Contagem.MApp/SoftwareShow.Contagem.MApp.Droid/SoftwareShow.Contagem.MApp.Droid.csproj `
+          -c ${{ env.BUILD_CONFIGURATION }} `
+          -f net8.0-android `
+          --no-restore `
+          -p:ApplicationDisplayVersion=1.0 `
+          -p:ApplicationVersion=1 `
+          -p:AndroidPackageFormat=apk `
+          -p:EmbedAssembliesIntoApk=true `
+          -p:PublishTrimmed=false `
+          -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT
       shell: pwsh
+    
+    # Encontrar e copiar APK gerado
+    - name: Find and copy APK
       run: |
-        Write-Host "Searching for generated APK..."
-        
-        $projectDir = Split-Path "${{ steps.find-project.outputs.project-path }}" -Parent
-        $apkFiles = @()
-        
-        # Search in common locations
-        $searchPaths = @(
-          "$projectDir\bin\Release\net8.0-android",
-          "$projectDir\bin\Release\net8.0-android\publish"
-        )
-        
-        foreach ($path in $searchPaths) {
-          if (Test-Path $path) {
-            $found = Get-ChildItem $path -Filter "*.apk" -Recurse
-            $apkFiles += $found
-          }
-        }
-        
-        # Fallback: search entire project directory
+        $apkFiles = Get-ChildItem -Recurse -Filter "*.apk" | Where-Object { $_.Directory.Name -notlike "*unsigned*" }
         if ($apkFiles.Count -eq 0) {
-          $apkFiles = Get-ChildItem $projectDir -Filter "*.apk" -Recurse
-        }
-        
-        if ($apkFiles.Count -gt 0) {
-          $apkPath = $apkFiles[0].FullName
-          $apkName = $apkFiles[0].Name
-          $apkSize = [math]::Round($apkFiles[0].Length / 1MB, 2)
-          
-          Write-Host "✅ APK Found: $apkPath"
-          Write-Host "📱 APK Name: $apkName"
-          Write-Host "📏 APK Size: $apkSize MB"
-          
-          echo "apk-path=$apkPath" >> $env:GITHUB_OUTPUT
-          echo "apk-name=$apkName" >> $env:GITHUB_OUTPUT
-          echo "apk-found=true" >> $env:GITHUB_OUTPUT
-        } else {
-          Write-Host "❌ No APK files found"
-          
-          # Debug: List all files in release directory
-          Write-Host "Files in release directory:"
-          if (Test-Path "$projectDir\bin\Release\net8.0-android") {
-            Get-ChildItem "$projectDir\bin\Release\net8.0-android" -Recurse | ForEach-Object {
-              Write-Host "  $($_.FullName)"
-            }
-          }
-          
-          echo "apk-found=false" >> $env:GITHUB_OUTPUT
+          Write-Host "No APK files found. Listing all files in bin directory:"
+          Get-ChildItem -Recurse -Path "SoftwareShow.Contagem.MApp/SoftwareShow.Contagem.MApp.Droid/bin" | Select-Object FullName
           exit 1
         }
         
-    - name: Upload APK Artifact
-      if: steps.find-apk.outputs.apk-found == 'true'
+        Write-Host "Found APK files:"
+        $apkFiles | ForEach-Object { Write-Host $_.FullName }
+        
+        # Criar diretório de artifacts se não existir
+        New-Item -ItemType Directory -Force -Path "artifacts"
+        
+        # Copiar APK para diretório de artifacts
+        $apkFiles | ForEach-Object {
+          $newName = "SoftwareShow.Contagem.MApp-${{ github.run_number }}.apk"
+          Copy-Item $_.FullName -Destination "artifacts/$newName"
+          Write-Host "Copied $($_.Name) to artifacts/$newName"
+        }
+      shell: pwsh
+    
+    # Upload do APK como artifact
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk
-        path: ${{ steps.find-apk.outputs.apk-path }}
+        name: android-apk-${{ github.run_number }}
+        path: artifacts/*.apk
         retention-days: 30
-        
-    - name: Build Summary
-      shell: pwsh
-      run: |
-        Write-Host ""
-        Write-Host "🎉 BUILD SUCCESSFUL!"
-        Write-Host "================================"
-        Write-Host "✅ APK Generated: ${{ steps.find-apk.outputs.apk-name }}"
-        Write-Host "📁 Location: ${{ steps.find-apk.outputs.apk-path }}"
-        Write-Host "📥 Download from: Actions > Artifacts > android-apk"
-        Write-Host ""
-        Write-Host "🎯 All issues resolved:"
-        Write-Host "   ✅ XABLD7009 (ExtractAar): FIXED"
-        Write-Host "   ✅ XABLD7024 (Corruption): FIXED"
-        Write-Host "   ✅ Project configuration: FIXED"
-        Write-Host "   ✅ APK generation: SUCCESS"
-        Write-Host "================================"
+    
+    # Criar release (opcional - apenas para tags)
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    
+    # Upload do APK para release (opcional - apenas para tags)
+    - name: Upload APK to Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/SoftwareShow.Contagem.MApp-${{ github.run_number }}.apk
+        asset_name: SoftwareShow.Contagem.MApp.apk
+        asset_content_type: application/vnd.android.package-archive
 
