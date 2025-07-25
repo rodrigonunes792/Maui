@@ -7,17 +7,27 @@ namespace SoftwareShow.Contagem.MApp.Droid
     {
         public static MauiApp CreateMauiApp()
         {
-            var builder = MauiApp.CreateBuilder();
+            try
+            {
+                var builder = MauiApp.CreateBuilder();
 
-            builder.UseSharedMauiApp().UseBarcodeReader();
+                builder.UseSharedMauiApp().UseBarcodeReader();
 
 #if ANDROID
-            builder.Services.AddTransient<IOrientationService, OrientationService>();
-
-
+                builder.Services.AddTransient<IOrientationService, OrientationService>();
 #endif
 
-            return builder.Build();
+                return builder.Build();
+            }
+            catch (Exception ex)
+            {
+                // Log do erro para debug
+                System.Diagnostics.Debug.WriteLine($"Erro na criação da aplicação MAUI: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+                
+                // Re-throw para que o sistema possa lidar com o erro
+                throw;
+            }
         }
     }
 }

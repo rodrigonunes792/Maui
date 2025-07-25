@@ -22,9 +22,12 @@ namespace SoftwareShow.Contagem.MApp
                     fonts.AddFont("Inter-VariableFont.ttf", "InterRegular");
                 });
 
+            // Adicionar logging apenas em DEBUG
 #if DEBUG
             builder.Logging.AddDebug();
+#endif
 
+            // Registrar HttpClient (necessário em todas as configurações)
             builder.Services.AddSingleton<HttpClient>(provider =>
             {
                 var httpClient = new HttpClient();
@@ -34,15 +37,13 @@ namespace SoftwareShow.Contagem.MApp
                 return httpClient;
             });
 
-            // Registrar Services
+            // Registrar Services (necessários em todas as configurações)
             builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddScoped<IRestService, RestService>();
             builder.Services.AddScoped<IExportService, ExportService>();
 
-
-
-            // ViewModels  
+            // Registrar ViewModels e Pages (necessários em todas as configurações)
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<LoginPage>();
 
@@ -57,11 +58,6 @@ namespace SoftwareShow.Contagem.MApp
 
             builder.Services.AddTransient<MenuPage>();
             builder.Services.AddTransient<MainPage>();
-
-          
-
-
-#endif
 
             return builder;
         }
