@@ -1,121 +1,47 @@
-name: Build Android APK
+name: Build Android APK (Minimal Fix)
 
-# Trigger do workflow - executa quando há push ou pull request na branch main
+# Versão minimal focada em resolver o erro XA1030
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  # Permite execução manual do workflow
   workflow_dispatch:
 
 jobs:
   build-android:
     runs-on: windows-latest
     
-    env:
-      BUILD_CONFIGURATION: Release
-      DOTNET_VERSION: '8.0.x'
-      
     steps:
-    # Checkout do código fonte
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
     
-    # Configurar .NET SDK
-    - name: Setup .NET SDK
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-        include-prerelease: false
+        dotnet-version: '8.0.x'
     
-    # Instalar workload do MAUI
     - name: Install MAUI Workload
       run: dotnet workload install maui
     
-    # Listar arquivos para debug (opcional)
-    - name: List project files
-      run: |
-        Write-Host "Listing solution files:"
-        Get-ChildItem -Recurse -Name "*.sln" | ForEach-Object { Write-Host $_ }
-        Write-Host "Listing project files:"
-        Get-ChildItem -Recurse -Name "*.csproj" | ForEach-Object { Write-Host $_ }
-      shell: pwsh
-    
-    # Restaurar dependências
     - name: Restore dependencies
-      run: dotnet restore Contagem.sln --verbosity normal
+      run: dotnet restore
     
-    # Build do projeto Android
-    - name: Build Android APK
+    - name: Build Android APK (XA1030 Fix)
       run: |
         dotnet publish SoftwareShow.Contagem.MApp/SoftwareShow.Contagem.MApp.Droid/SoftwareShow.Contagem.MApp.Droid.csproj `
-          -c ${{ env.BUILD_CONFIGURATION }} `
+          -c Release `
           -f net8.0-android `
-          --no-restore `
-          -p:ApplicationDisplayVersion=1.0 `
-          -p:ApplicationVersion=1 `
           -p:AndroidPackageFormat=apk `
-          -p:EmbedAssembliesIntoApk=true `
           -p:PublishTrimmed=false `
-          -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT
+          -p:RunAOTCompilation=false `
+          -p:EmbedAssembliesIntoApk=true `
+          -o ./artifacts
       shell: pwsh
     
-    # Encontrar e copiar APK gerado
-    - name: Find and copy APK
-      run: |
-        $apkFiles = Get-ChildItem -Recurse -Filter "*.apk" | Where-Object { $_.Directory.Name -notlike "*unsigned*" }
-        if ($apkFiles.Count -eq 0) {
-          Write-Host "No APK files found. Listing all files in bin directory:"
-          Get-ChildItem -Recurse -Path "SoftwareShow.Contagem.MApp/SoftwareShow.Contagem.MApp.Droid/bin" | Select-Object FullName
-          exit 1
-        }
-        
-        Write-Host "Found APK files:"
-        $apkFiles | ForEach-Object { Write-Host $_.FullName }
-        
-        # Criar diretório de artifacts se não existir
-        New-Item -ItemType Directory -Force -Path "artifacts"
-        
-        # Copiar APK para diretório de artifacts
-        $apkFiles | ForEach-Object {
-          $newName = "SoftwareShow.Contagem.MApp-${{ github.run_number }}.apk"
-          Copy-Item $_.FullName -Destination "artifacts/$newName"
-          Write-Host "Copied $($_.Name) to artifacts/$newName"
-        }
-      shell: pwsh
-    
-    # Upload do APK como artifact
-    - name: Upload APK artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk-${{ github.run_number }}
-        path: artifacts/*.apk
-        retention-days: 30
-    
-    # Criar release (opcional - apenas para tags)
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-    
-    # Upload do APK para release (opcional - apenas para tags)
-    - name: Upload APK to Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/SoftwareShow.Contagem.MApp-${{ github.run_number }}.apk
-        asset_name: SoftwareShow.Contagem.MApp.apk
-        asset_content_type: application/vnd.android.package-archive
+        name: android-apk
+        path: ./artifacts/*.apk
 
