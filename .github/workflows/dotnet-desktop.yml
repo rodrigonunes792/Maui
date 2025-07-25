@@ -28,15 +28,15 @@ jobs:
       run: dotnet restore
     
     - name: Build Android APK (XA1030 Fix)
-      run: |
+      run: |        
         dotnet publish SoftwareShow.Contagem.MApp/SoftwareShow.Contagem.MApp.Droid/SoftwareShow.Contagem.MApp.Droid.csproj `
-          -c Release `
-          -f net8.0-android `
-          -p:AndroidPackageFormat=apk `
-          -p:PublishTrimmed=false `
-          -p:RunAOTCompilation=false `
-          -p:EmbedAssembliesIntoApk=true `
-          -o ./artifacts
+            -c Debug `
+            -f net8.0-android `
+            -p:AndroidPackageFormat=apk `
+            -p:PublishTrimmed=false `
+            -p:RunAOTCompilation=false `
+            -p:EmbedAssembliesIntoApk=true `
+            -o ./artifacts            
       shell: pwsh
     
     - name: Upload APK
