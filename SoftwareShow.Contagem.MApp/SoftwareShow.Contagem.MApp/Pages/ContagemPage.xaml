@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SoftwareShow.Contagem.MApp.Pages.ContagemPage"
+             xmlns:controls="clr-namespace:SoftwareShow.Contagem.MApp.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False"
+             Title="Informações">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+        <!-- Header Padrão -->
+        <controls:StandardHeader Grid.Row="0"
+                               Title="Informações"
+                               ShowBackButton="True"
+                               BackClicked="OnBackClicked" />
+
+        <!-- Formulário -->
+        <ScrollView Grid.Row="1" Padding="20,20,20,0">
+            <StackLayout Spacing="20">
+
+                <!-- Data e Hora -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <!-- Data -->
+                    <StackLayout Grid.Column="0">
+                        <Label Text="Data" 
+                               Style="{StaticResource DescriptionStyle}"
+                               Margin="5,0,0,5" />
+                        <Border Style="{StaticResource EntryBorderStyle}">
+                            <Entry Style="{StaticResource EntryStyle}"
+                                   Text="{Binding DataTexto}"
+                                   IsReadOnly="True"
+                                   TextColor="{StaticResource IconColor}" />
+                        </Border>
+                    </StackLayout>
+
+                    <!-- Hora -->
+                    <StackLayout Grid.Column="1">
+                        <Label Text="Hora" 
+                               Style="{StaticResource DescriptionStyle}"
+                               Margin="5,0,0,5" />
+                        <Border Style="{StaticResource EntryBorderStyle}">
+                            <Entry Style="{StaticResource EntryStyle}"
+                                   Text="{Binding HoraTexto}"
+                                   IsReadOnly="True"
+                                   TextColor="{StaticResource IconColor}" />
+                        </Border>
+                    </StackLayout>
+                </Grid>
+
+                <!-- Loja -->
+                <StackLayout>
+                    <Label Text="Loja" 
+                           Style="{StaticResource DescriptionStyle}"
+                           Margin="5,0,0,5" />
+                    <Border Style="{StaticResource EntryBorderStyle}">
+                        <Entry Style="{StaticResource EntryStyle}"
+                               Text="{Binding LojaTexto}"
+                               IsReadOnly="True"
+                               TextColor="{StaticResource IconColor}" />
+                    </Border>
+                </StackLayout>
+
+                <!-- Atividade -->
+                <StackLayout>
+                    <Label Text="Atividade" 
+                           Style="{StaticResource DescriptionStyle}"
+                           Margin="5,0,0,5" />
+                    <Border Style="{StaticResource EntryBorderStyle}">
+                        <Picker ItemsSource="{Binding Atividades}"
+                                SelectedItem="{Binding AtividadeSelecionada}"
+                                ItemDisplayBinding="{Binding Nome}"
+                                Title="Selecione uma atividade"
+                                FontSize="16"
+                                TextColor="{StaticResource TextColor}"
+                                BackgroundColor="Transparent" 
+                                Style="{StaticResource PickerNoBorderStyle}"
+                                >
+                        </Picker>
+                    </Border>
+                </StackLayout>
+
+                <!-- Complemento -->
+                <StackLayout>
+                    <Label Text="Complemento" 
+                           Style="{StaticResource DescriptionStyle}"
+                           Margin="5,0,0,5" />
+                    <Border Style="{StaticResource EntryBorderStyle}">
+                        <Entry x:Name="ComplementoEntry"
+                               Style="{StaticResource EntryStyle}"
+                               Text="{Binding Complemento}"
+                               Placeholder="Digite um complemento" />
+                    </Border>
+                </StackLayout>
+
+                <!-- Responsável -->
+                <StackLayout>
+                    <Label Text="Responsável" 
+                           Style="{StaticResource DescriptionStyle}"
+                           Margin="5,0,0,5" />
+                    <Border Style="{StaticResource EntryBorderStyle}">
+                        <Entry x:Name="ResponsavelEntry"
+                               Style="{StaticResource EntryStyle}"
+                               Text="{Binding Responsavel}"
+                               Placeholder="Nome do responsável" />
+                    </Border>
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Botão Iniciar -->
+        <Button Grid.Row="2"
+                Text="Iniciar"
+                Style="{StaticResource LoginButtonStyle}"
+                Command="{Binding IniciarCommand}"
+                IsEnabled="{Binding PodeIniciar}"
+                Margin="20,20,20,10" />
+
+        <!-- Botão Cancelar -->
+        <Button Grid.Row="3"
+                Text="Cancelar"
+                BackgroundColor="{StaticResource BorderColor}"
+                TextColor="{StaticResource TextColor}"
+                FontSize="16"
+                CornerRadius="8"
+                HeightRequest="50"
+                Command="{Binding CancelarCommand}"
+                Margin="20,0,20,20" />
+
+        <!-- Loading Overlay -->
+        <Grid BackgroundColor="Black"
+              Opacity="0.4"
+              IsVisible="{Binding IsLoading}"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill"
+              Grid.RowSpan="4">
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              Color="White"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

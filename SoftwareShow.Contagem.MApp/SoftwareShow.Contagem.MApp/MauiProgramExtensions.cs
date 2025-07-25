@@ -36,12 +36,32 @@ namespace SoftwareShow.Contagem.MApp
 
             // Registrar Services
             builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-            // Services
+            builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddScoped<IRestService, RestService>();
+            builder.Services.AddScoped<IExportService, ExportService>();
+
+
 
             // ViewModels  
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<LoginPage>();
+
+            builder.Services.AddTransient<StoreSelectionViewModel>();
+            builder.Services.AddTransient<StoreSelectionPage>();
+
+            builder.Services.AddTransient<ContagemListViewModel>();
+            builder.Services.AddTransient<ContagemListPage>();
+
+            builder.Services.AddTransient<ContagemViewModel>();
+            builder.Services.AddTransient<ContagemPage>();
+            builder.Services.AddTransient<ContagemItemPage>();
+            builder.Services.AddTransient<PesquisaProdutoPage>();
+            builder.Services.AddTransient<MenuPage>();
+            builder.Services.AddTransient<MainPage>();
+
+          
+
+
 #endif
 
             return builder;

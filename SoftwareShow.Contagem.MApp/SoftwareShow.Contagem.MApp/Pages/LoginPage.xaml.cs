@@ -18,6 +18,12 @@ public partial class LoginPage : ContentPage
         await Shell.Current.GoToAsync("//settings");
     }
 
+    protected override void OnAppearing()
+    {
+        SenhaEntry.Text = string.Empty;
+        UsuarioEntry.Text = string.Empty;
+    }
+
     private void OnTogglePasswordClicked(object sender, EventArgs e)
     {
         _viewModel.TogglePasswordVisibility();

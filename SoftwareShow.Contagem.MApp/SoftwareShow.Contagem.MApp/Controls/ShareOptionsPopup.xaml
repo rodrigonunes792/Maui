@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:Class="SoftwareShow.Contagem.MApp.Controls.ShareOptionsPopup"
+               CanBeDismissedByTappingOutsideOfPopup="True"
+               Color="#80000000"
+               VerticalOptions="Fill"
+               HorizontalOptions="Fill">
+
+    <!-- Grid principal que ocupa toda a tela -->
+    <Grid>
+        <!-- Área transparente para fechar -->
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnCancelClicked" />
+        </Grid.GestureRecognizers>
+
+        <!-- Container do sheet fixado na parte inferior -->
+        <Border BackgroundColor="White"
+                StrokeShape="RoundRectangle 20,20,0,0"
+                VerticalOptions="End"
+                HorizontalOptions="Fill"
+                Margin="0"
+                HeightRequest="320">
+
+            <StackLayout Padding="0" Spacing="0">
+
+                <!-- Handle do Popup -->
+                <Border BackgroundColor="#E0E0E0"
+                    StrokeShape="RoundRectangle 2"
+                    WidthRequest="40"
+                    HeightRequest="4"
+                    HorizontalOptions="Center"
+                    Margin="0,12,0,20" />
+
+                <!-- Título -->
+                <Label Text="Compartilhar"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="#333333"
+                   HorizontalOptions="Start"
+                   Margin="30,0,0,15" />
+
+                <!-- Linha separadora -->
+                <BoxView BackgroundColor="#F0F0F0" 
+      HeightRequest="1" 
+      Margin="0,0,0,0" />
+                <!-- Opções de Compartilhamento -->
+                <StackLayout Padding="20,0" Spacing="0">
+
+                    <!-- Compartilhar arquivo PDF -->
+                    <Border BackgroundColor="Transparent"
+                        Stroke="Transparent"
+                        Padding="0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnPdfClicked" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*"
+                          Padding="0,16"
+                          BackgroundColor="Transparent">
+
+                            <Border Grid.Column="0"
+                                BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 8"
+                                WidthRequest="40"
+                                HeightRequest="30"
+                                VerticalOptions="Center">
+                                <Label Text="🖨️"
+                                   FontSize="20"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            </Border>
+
+                            <Label Grid.Column="1"
+                               Text="Compartilhar arquivo PDF"
+                               FontSize="16"
+                               TextColor="#333333"
+                               VerticalOptions="Center"
+                               Margin="16,0,0,0" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Linha separadora -->
+                    <BoxView BackgroundColor="#F0F0F0" 
+                         HeightRequest="1" 
+                         Margin="0,0,0,0" />
+
+                    <!-- Compartilhar arquivo Excel -->
+                    <Border BackgroundColor="Transparent"
+                        Stroke="Transparent"
+                        Padding="0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnExcelClicked" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*"
+                          Padding="0,16"
+                          BackgroundColor="Transparent">
+
+                            <Border Grid.Column="0"
+                                BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 8"
+                                WidthRequest="40"
+                                HeightRequest="30"
+                                VerticalOptions="Center">
+                                <Label Text="📊"
+                                   FontSize="20"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            </Border>
+
+                            <Label Grid.Column="1"
+                               Text="Compartilhar arquivo Excel"
+                               FontSize="16"
+                               TextColor="#333333"
+                               VerticalOptions="Center"
+                               Margin="16,0,0,0" />
+                        </Grid>
+                    </Border>
+
+                </StackLayout>
+                <!-- Linha separadora -->
+                <BoxView BackgroundColor="#F0F0F0" 
+                          HeightRequest="1" 
+                          Margin="0,0,0,0" />
+
+                <!-- Botão Cancelar -->
+                <Border BackgroundColor="Transparent"
+                    Stroke="#E74C3C"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Margin="20,30,20,20">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCancelClicked" />
+                    </Border.GestureRecognizers>
+
+                    <Label Text="Não compartilhar"
+                       FontSize="16"
+                       TextColor="#E74C3C"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Padding="0,16" />
+                </Border>
+
+                <!-- Espaço inferior para safe area -->
+                <BoxView HeightRequest="20" BackgroundColor="Transparent" />
+
+            </StackLayout>
+        </Border>
+    </Grid>
+</toolkit:Popup>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SoftwareShow.Contagem.MApp.Service
@@ -93,6 +94,8 @@ namespace SoftwareShow.Contagem.MApp.Service
             }
         }
 
+
+
         private static Autenticacao CreateErrorResponse(string mensagem)
         {
             return new Autenticacao
@@ -112,6 +115,90 @@ namespace SoftwareShow.Contagem.MApp.Service
                 System.Net.HttpStatusCode.NotFound => "Serviço não encontrado. Verifique a URL da API",
                 _ => "Erro ao autenticar"
             };
+        }
+
+
+
+        public async Task<List<Kit>> BaixarKitAsync(int codigoLoja, CancellationToken cancellationToken = default)
+        {
+            var baseUrl = await GetApiBaseUrlAsync();
+            string endPoint = String.Format("kit/listar/{0}", codigoLoja);
+            var uri = new Uri(String.Concat(baseUrl, "/", endPoint));
+
+            var json = await _httpClient.GetStringAsync(uri, cancellationToken);
+            var rawListString = JsonConvert.DeserializeObject<string>(json);
+            return JsonConvert.DeserializeObject<List<Kit>>(rawListString) ?? new List<Kit>();
+        }
+
+        public async Task<List<Preco>> BaixarPrecoAsync(int codigoLoja, CancellationToken cancellationToken = default)
+        {
+            var baseUrl = await GetApiBaseUrlAsync();
+            string endPoint = String.Format("preco/listar/{0}", codigoLoja);
+            var uri = new Uri(String.Concat(baseUrl, "/", endPoint));
+
+            var json = await _httpClient.GetStringAsync(uri, cancellationToken);
+
+            var rawListString = JsonConvert.DeserializeObject<string>(json);
+            return JsonConvert.DeserializeObject<List<Preco>>(rawListString) ?? new List<Preco>();
+        }
+
+        public async Task<List<Atividade>> ConsultarAtividadeAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var baseUrl = await GetApiBaseUrlAsync();
+                string endPoint = "atividade/listar";
+                var uri = new Uri(String.Concat(baseUrl, "/", endPoint));
+
+                var json = await _httpClient.GetStringAsync(uri);
+
+                var rawListString = JsonConvert.DeserializeObject<string>(json);
+
+                return JsonConvert.DeserializeObject<List<Atividade>>(rawListString) ?? new List<Atividade>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar atividades: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<List<CodigoBarras>> BaixarCodigoBarrasAsync(CancellationToken cancellationToken = default)
+        {
+            var baseUrl = await GetApiBaseUrlAsync();
+            string endPoint = "codigobarras/listar";
+            var uri = new Uri(String.Concat(baseUrl, "/", endPoint));
+
+            var json = await _httpClient.GetStringAsync(uri, cancellationToken);
+            var rawListString = JsonConvert.DeserializeObject<string>(json);
+            return JsonConvert.DeserializeObject<List<CodigoBarras>>(rawListString) ?? new List<CodigoBarras>();
+        }
+
+        public async Task<List<Produto>> BaixarProdutoAsync(CancellationToken cancellationToken = default)
+        {
+            var baseUrl = await GetApiBaseUrlAsync();
+            string endPoint = "produto/listar";
+            var uri = new Uri(String.Concat(baseUrl, "/", endPoint));
+
+            var json = await _httpClient.GetStringAsync(uri, cancellationToken);
+            var rawListString = JsonConvert.DeserializeObject<string>(json);
+            return JsonConvert.DeserializeObject<List<Produto>>(rawListString) ?? new List<Produto>();
+        }
+
+        public Task<int> EnviarContagemAsync(ContagemModel obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<ProdutosInventario>> ListarProdutosInventarioPorAtividadeIdAsync(int atividadeId)
+        {
+            var baseUrl = await GetApiBaseUrlAsync();
+            string endPoint = String.Format("produtosInventario/listarprodutosinventarioporatividadeid/" + atividadeId.ToString());
+            var uri = new Uri(String.Concat(baseUrl, "/", endPoint));
+
+            var json = await _httpClient.GetStringAsync(uri);
+            var rawListString = JsonConvert.DeserializeObject<string>(json);
+
+            return JsonConvert.DeserializeObject<List<ProdutosInventario>>(rawListString);
         }
     }
 }

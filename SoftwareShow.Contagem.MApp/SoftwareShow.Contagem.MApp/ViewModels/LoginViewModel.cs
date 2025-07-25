@@ -1,19 +1,14 @@
 ﻿using SoftwareShow.Contagem.MApp.Interfaces;
-using System;
-using System.Collections.Generic;
+using SoftwareShow.Contagem.MApp.Models;
 using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoftwareShow.Contagem.MApp.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
         private readonly IRestService _restService;
-
+        private readonly IDatabaseService _databaseService;
         private string _usuario = string.Empty;
         private string _senha = string.Empty;
         private bool _isLoading = false;
@@ -59,9 +54,10 @@ namespace SoftwareShow.Contagem.MApp.ViewModels
             }
         }
 
-        public LoginViewModel(IRestService restService)
+        public LoginViewModel(IRestService restService, IDatabaseService databaseService)
         {
             _restService = restService;
+            _databaseService = databaseService;
         }
 
         public async Task<(bool Success, string Message)> LoginAsync()
@@ -104,7 +100,7 @@ namespace SoftwareShow.Contagem.MApp.ViewModels
                         await SecureStorage.SetAsync("user_lojas", lojasJson);
                         await SecureStorage.SetAsync("total_lojas", autenticacao.Lojas.Count().ToString());
                     }
-
+                    await GetDatabase(autenticacao.Limpar);
                     return (true, "Login realizado com sucesso!");
                 }
                 else
@@ -122,6 +118,30 @@ namespace SoftwareShow.Contagem.MApp.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        private async Task GetDatabase(bool clear)
+        {
+            var db = await _databaseService.GetConnectionAsync();
+            if (clear)
+            {
+                
+
+                await db.DropTableAsync<ContagemModel>();
+                await db.DropTableAsync<CodigoBarras>();
+                await db.DropTableAsync<Produto>();
+                await db.DropTableAsync<Kit>();
+                await db.DropTableAsync<Preco>();
+                await db.DropTableAsync<Atividade>();
+                //db.DropTableAsync<ProdutosInventario>();
+
+            }
+            await db.CreateTableAsync<ContagemModel>();
+            await db.CreateTableAsync<CodigoBarras>();
+            await db.CreateTableAsync<Produto>();
+            await db.CreateTableAsync<Kit>();
+            await db.CreateTableAsync<Preco>();
+            await db.CreateTableAsync<Atividade>();
         }
 
         public void TogglePasswordVisibility()

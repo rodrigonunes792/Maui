@@ -4,14 +4,31 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:converters ="clr-namespace:SoftwareShow.Contagem.MApp.Converters"
     >
 
-    
     <!-- ////////////  Login page styles Inicio /////////////////-->
 
+  
 
     <!-- Converters -->
     <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+
+    <!-- Conversores para ContagemListPage -->
+    <converters:BoolToTabBackgroundConverter x:Key="BoolToTabBackgroundConverter" />
+    <converters:BoolToTabBorderConverter x:Key="BoolToTabBorderConverter" />
+    <converters:BoolToTabTextColorConverter x:Key="BoolToTabTextColorConverter" />
+    <converters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
+    <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+    <converters:ContagemDateFormatConverter x:Key="ContagemDateFormatConverter" />
+    <converters:QuantidadeProdutosConverter x:Key="QuantidadeProdutosConverter" />
+    <converters:ContagemStatusColorConverter x:Key="ContagemStatusColorConverter" />
+    <converters:ContagemStatusIconConverter x:Key="ContagemStatusIconConverter" />
+
+
+
+
     <!-- Cores do app -->
     <Color x:Key="PrimaryColor">#333333</Color>
     <Color x:Key="BackgroundColor">white</Color>
@@ -126,6 +143,69 @@
     <!-- Estilos tela Seleção de Lojas Fim  -->
 
 
+
+
+
+
+    <!-- Estilos específicos para ContagemListPage Inicio -->
+   
+    
+    <Style x:Key="ContagemItemBorderStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource WhiteColor}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+        <Setter Property="Padding" Value="15,12" />
+        <Setter Property="Margin" Value="0,4" />
+    </Style>
+
+    <Style x:Key="ContagemTitleLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <Style x:Key="ContagemSubtitleLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{StaticResource IconColor}" />
+    </Style>
+
+
+    <Style x:Key="StatusIconBorderStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="#27AE60" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+        <Setter Property="WidthRequest" Value="32" />
+        <Setter Property="HeightRequest" Value="32" />
+        <Setter Property="Stroke" Value="Transparent" />
+    </Style>
+
+    <Style x:Key="FloatingButtonStyle" TargetType="Border">
+        <Setter Property="StrokeShape" Value="RoundRectangle 30" />
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="WidthRequest" Value="60" />
+        <Setter Property="HeightRequest" Value="60" />
+        <Setter Property="VerticalOptions" Value="End" />
+        <Setter Property="HorizontalOptions" Value="End" />
+        <Setter Property="Margin" Value="0,0,20,30" />
+    </Style>
+
+
+    <!-- Estilos específicos para ContagemListPage Fim -->
+
+
+    <Style x:Key="PickerNoBorderStyle" TargetType="Picker">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+        <Style.Triggers>
+            <Trigger TargetType="Picker" Property="IsFocused" Value="True">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+            </Trigger>
+            <Trigger TargetType="Picker" Property="IsEnabled" Value="False">
+                <Setter Property="TextColor" Value="Gray" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 
 
 </ResourceDictionary>

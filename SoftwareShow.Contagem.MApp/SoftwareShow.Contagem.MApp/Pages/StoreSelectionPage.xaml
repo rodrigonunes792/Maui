@@ -6,8 +6,8 @@
              BackgroundColor="{StaticResource BackgroundColor}"
              Shell.NavBarIsVisible="False"
              Title="Seleção de Lojas">
-    
-    <Grid RowDefinitions="Auto,*">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
 
         <!-- Header Padrão -->
         <controls:StandardHeader Grid.Row="0"
@@ -15,79 +15,181 @@
                                ShowBackButton="True"
                                BackClicked="OnBackClicked" />
 
-        <!-- Content -->
-        <ScrollView Grid.Row="1" BackgroundColor="{StaticResource BackgroundColor}">
-            <StackLayout Spacing="0">
+        <!-- Seção Sincronização -->
+        <StackLayout Grid.Row="1"
+                   BackgroundColor="{StaticResource WhiteColor}" 
+                   Padding="0,15,0,20">
 
-                <!-- Seção Sincronização -->
-                <StackLayout BackgroundColor="{StaticResource WhiteColor}" 
-                           Padding="0,15,0,20">
+            <Label Text="Ative ou desative atualização de tabelas"
+                   Style="{StaticResource SectionTitleStyle}"
+                   Margin="20,5,20,10" />
 
-                    <Label Text="Ative ou desative atualização de tabelas"
-                           Style="{StaticResource SectionTitleStyle}"
-                           Margin="20,5,20,10" />
+            <!-- Switch Sincronizar -->
+            <Grid Margin="20,0" ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="Sincronizar dados"
+                       FontSize="16"
+                       TextColor="{StaticResource TextColor}"
+                       VerticalOptions="Center" />
 
-                    <!-- Switch Sincronizar -->
-                    <Grid Margin="20,0" ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0"
-                               Text="Sincronizar dados"
-                               FontSize="16"
-                               TextColor="{StaticResource TextColor}"
-                               VerticalOptions="Center" />
+                <Switch Grid.Column="1"
+                        x:Name="SyncSwitch"
+                        IsToggled="{Binding IsSyncEnabled}"
+                        OnColor="{StaticResource OnColor}"
+                        IsEnabled="True"
+                        ThumbColor="{StaticResource WhiteColor}" />
+            </Grid>
+        </StackLayout>
 
-                        <Switch Grid.Column="1"
-                                x:Name="SyncSwitch"
-                                IsToggled="{Binding IsSyncEnabled}"
-                                OnColor="{StaticResource OnColor}"
-                                IsEnabled="True"
-                                ThumbColor="{StaticResource WhiteColor}" />
+        <!-- Linha divisória -->
+        <BoxView Grid.Row="2"
+                Style="{StaticResource SeparatorLineStyle}" 
+                Margin="0" />
+
+        <!-- Seção Busca FIXA -->
+        <StackLayout Grid.Row="3" 
+                   BackgroundColor="{StaticResource BackgroundColor}" 
+                   Padding="20,15"
+                   Spacing="10">
+
+            <Label Text="Selecione uma loja para continuar"
+                   Style="{StaticResource SectionTitleStyle}" />
+
+            <!-- Campo de Pesquisa -->
+            <Border Style="{StaticResource EntryBorderStyle}" Margin="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry x:Name="SearchEntry"
+                           Grid.Column="0"
+                           Style="{StaticResource SearchEntryStyle}"
+                           Placeholder="Pesquisar a loja"
+                           Text="{Binding SearchDisplayText}"
+                           TextChanged="OnSearchTextChanged" />
+
+                    <!-- Ícone Search (quando pesquisando) -->
+                    <ImageButton x:Name="SearchIcon"
+                               Grid.Column="1"
+                               Source="search"
+                               HeightRequest="24"
+                               WidthRequest="24"
+                               BackgroundColor="Transparent"
+                               IsVisible="{Binding ShowSearchIcon}"   
+                               />
+
+                    <!-- Ícone X (quando selecionado/preenchido) -->
+                    <ImageButton x:Name="ClearIcon"
+                               Grid.Column="1"
+                               Source="x"
+                               HeightRequest="20"
+                               WidthRequest="20"
+                               BackgroundColor="Transparent"
+                               IsVisible="{Binding ShowClearIcon}"
+                               Clicked="OnClearButtonClicked" />
+                </Grid>
+            </Border>
+
+        </StackLayout>
+
+        <!-- Lista de Lojas -->
+        <CollectionView Grid.Row="4"
+              x:Name="StoresCollectionView"
+              ItemsSource="{Binding FilteredStores}"
+              BackgroundColor="Transparent"
+              Margin="20,0,20,20">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="0,4">
+                        <Border BackgroundColor="{StaticResource WhiteColor}"
+                        Stroke="#E0E0E0"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="15,12">
+
+                            <!-- Adicionar TapGestureRecognizer diretamente no Border -->
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnStoreItemTapped" />
+                            </Border.GestureRecognizers>
+
+                            <!-- Informações da loja -->
+                            <Label FontSize="16"
+                           TextColor="{StaticResource TextColor}"
+                           VerticalOptions="Center">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding COD_LOJA, StringFormat='{0:D4}'}" />
+                                        <Span Text=" - " />
+                                        <Span Text="{Binding NOME_LOJA}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+
+                        </Border>
                     </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <!-- Empty View - só mostra se não há lojas E não há loja selecionada -->
+            <CollectionView.EmptyView>
+                <StackLayout Padding="20" Spacing="10" IsVisible="{Binding ShowEmptyView}">
+                    <Label Text="📭"
+                           FontSize="48"
+                           HorizontalOptions="Center"
+                           Opacity="0.5" />
+                    <Label Text="Nenhuma loja encontrada"
+                           FontSize="16"
+                           TextColor="#757575"
+                           HorizontalOptions="Center" />
+                    <Label Text="Tente ajustar sua pesquisa"
+                           FontSize="14"
+                           TextColor="#757575"
+                           HorizontalOptions="Center" />
                 </StackLayout>
+            </CollectionView.EmptyView>
 
-                <!-- Linha divisória -->
-                <BoxView Style="{StaticResource SeparatorLineStyle}" 
-                         Margin="0" />
+        </CollectionView>
 
-                <!-- Seção Seleção de Loja -->
-                <StackLayout BackgroundColor="{StaticResource BackgroundColor}" 
-                           Spacing="15">
+            <Label x:Name="LabelStatus" 
+                   Grid.Row="5"
+                   Text="{Binding SyncStatusText}" 
+                   TextColor="Black" 
+                   VerticalOptions="End" 
+                   HorizontalOptions="Center" 
+                   Margin="15,0,10,15" />
 
-                    <Label Text="Selecione uma loja para continuar"
-                           Style="{StaticResource SectionTitleStyle}" />
+         <!-- Adicionar o Loading Overlay que vocês já usam -->
+           <Grid BackgroundColor="Black"
+                  Opacity="0.4"
+                  IsVisible="{Binding IsLoading}"
+                  VerticalOptions="Fill"
+                  HorizontalOptions="Fill"
+                  Grid.RowSpan="6">
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                          Color="White"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Center" />
+            </Grid>
 
-                    <!-- Campo de Pesquisa -->
-                    <Border Style="{StaticResource EntryBorderStyle}"
-                            Margin="20,0">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Entry x:Name="SearchEntry"
-                                   Grid.Column="0"
-                                   Style="{StaticResource SearchEntryStyle}"
-                                   Placeholder="Pesquisar"
-                                   Text="{Binding SearchText}"
-                                   TextChanged="OnSearchTextChanged" />
+        <!-- Botão Flutuante - Border com ImageButton -->
+        <Border x:Name="ContinueFloatingButton"
+                    StrokeShape="RoundRectangle 30"
+                    BackgroundColor="Black"
+                    Stroke="Transparent"
+                    IsVisible="{Binding ShowContinueButton}"
+                    WidthRequest="60"
+                    HeightRequest="60"
+                    VerticalOptions="End"
+                    HorizontalOptions="End"
+                    Margin="0,0,20,30"
+                    Grid.Row="5">
 
-                            <Image Grid.Column="1"
-                                   Source="search.png"
-                                   WidthRequest="20"
-                                   HeightRequest="20"
-                                   VerticalOptions="Center"
-                                   Margin="0,0,10,0" />
-                        </Grid>
-                    </Border>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ContinueCommand}" />
+            </Border.GestureRecognizers>
 
-                    <!-- Lista de Lojas -->
-                    <StackLayout x:Name="StoresContainer" 
-                               Spacing="0"
-                               Margin="0,10,0,20">
-
-                        <!-- As lojas serão adicionadas dinamicamente -->
-
-                    </StackLayout>
-
-                </StackLayout>
-
-            </StackLayout>
-        </ScrollView>
-
+            <Image Source="arrow_right_white"
+                   BackgroundColor="Transparent"
+                   WidthRequest="30"
+                   HeightRequest="30" />
+        </Border>
     </Grid>
 </ContentPage>

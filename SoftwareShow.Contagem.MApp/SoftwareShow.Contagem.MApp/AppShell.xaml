@@ -28,4 +28,36 @@
                  ContentTemplate="{DataTemplate pages:StoreSelectionPage}"
                  Route="storeselection" />
 
+    <ShellContent Title="Main" 
+                 ContentTemplate="{DataTemplate local:MainPage}"
+                 Route="MainPage" />
+    
+    <ShellContent Title="Menu" 
+                 ContentTemplate="{DataTemplate pages:MenuPage}"
+                 Route="MenuPage" />
+
+    <ShellContent Title="Lista de Contagem" 
+                  ContentTemplate="{DataTemplate pages:ContagemListPage}" 
+                  Route="ContagemListPage" />
+
+    <ShellContent Title="Contagem" 
+              ContentTemplate="{DataTemplate pages:ContagemPage}" 
+              Route="ContagemPage" />
+    
+    <ShellContent Title="ContagemItem" 
+           ContentTemplate="{DataTemplate pages:ContagemItemPage}" 
+           Route="ContagemItemPage" />
+
+    <ShellContent Title="PesquisaProduto" 
+         ContentTemplate="{DataTemplate pages:PesquisaProdutoPage}" 
+         Route="PesquisaProdutoPage" />
+
+
+
+
+
+
+
+
+
 </Shell>

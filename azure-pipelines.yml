@@ -24,9 +24,9 @@ steps:
       Get-ChildItem -Recurse | Where-Object { $_.Name -like "*.sln" -or $_.Name -like "*.csproj" } | Select-Object FullName
 
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 8.0.x'  # Atualizado para .NET 8
+  displayName: 'Use .NET SDK 7.0.x'  # Voltando para .NET 7 se o projeto usar
   inputs:
-    version: '8.0.x'
+    version: '7.0.x'
     includePreviewVersions: false
 
 - task: DotNetCoreCLI@2
@@ -44,12 +44,55 @@ steps:
     # Adicione verbosidade para debug
     arguments: '--verbosity normal'
 
+# Restore específico para o projeto MAUI com target Android
+- task: DotNetCoreCLI@2
+  displayName: 'Restore MAUI project for Android'
+  inputs:
+    command: 'restore'
+    projects: '**/*Contagem*.csproj'  # Padrão mais amplo
+    arguments: '--verbosity normal'
+
+# Verificar target frameworks disponíveis
+- task: PowerShell@2
+  displayName: 'Check project target frameworks'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "Current working directory:"
+      pwd
+      Write-Host "Listing all directories and files:"
+      Get-ChildItem -Recurse | Where-Object { $_.Name -like "*.csproj" } | ForEach-Object {
+        Write-Host "Found project file: $($_.FullName)"
+      }
+      
+      Write-Host "Searching for SoftwareShow.Contagem.MApp.csproj:"
+      $projFiles = Get-ChildItem -Recurse -Filter "SoftwareShow.Contagem.MApp.csproj"
+      
+      if ($projFiles.Count -gt 0) {
+        foreach ($projFile in $projFiles) {
+          Write-Host "Found project: $($projFile.FullName)"
+          Write-Host "Project file content:"
+          Get-Content $projFile.FullName | Write-Host
+          Write-Host "=" * 50
+        }
+      } else {
+        Write-Host "SoftwareShow.Contagem.MApp.csproj not found"
+        Write-Host "Looking for any .csproj files with 'Contagem' in the name:"
+        Get-ChildItem -Recurse -Filter "*Contagem*.csproj" | ForEach-Object {
+          Write-Host "Alternative project found: $($_.FullName)"
+          Write-Host "Content:"
+          Get-Content $_.FullName | Write-Host
+        }
+      }
+
 - task: DotNetCoreCLI@2
   displayName: 'Build Android APK'
   inputs:
-    command: 'publish'  # Mudado de 'build' para 'publish'
-    projects: '**/SoftwareShow.Contagem.MApp.csproj'  # Padrão de busca
-    arguments: '-c $(buildConfiguration) -f net8.0-android --no-restore /p:ApplicationDisplayVersion=1.0 /p:ApplicationVersion=1 /p:AndroidPackageFormat=apk /p:EmbedAssembliesIntoApk=true /p:PublishTrimmed=false'
+    command: 'publish'
+    projects: '**/*Contagem*.csproj'  # Padrão mais amplo para encontrar o projeto
+    # Removi o -f para usar o target framework padrão do projeto
+    # Ou use net7.0-android se o projeto ainda estiver em .NET 7
+    arguments: '-c $(buildConfiguration) -f net7.0-android /p:ApplicationDisplayVersion=1.0 /p:ApplicationVersion=1 /p:AndroidPackageFormat=apk /p:EmbedAssembliesIntoApk=true /p:PublishTrimmed=false'
     publishWebProjects: false
     zipAfterPublish: false
 

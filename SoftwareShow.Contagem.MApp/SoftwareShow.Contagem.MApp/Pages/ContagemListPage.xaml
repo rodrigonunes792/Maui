@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SoftwareShow.Contagem.MApp.Pages.ContagemListPage"
+             xmlns:controls="clr-namespace:SoftwareShow.Contagem.MApp.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False"
+             Title="Lista de Contagem">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+        <!-- Header com seleção dinâmica -->
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource WhiteColor}">
+
+            <!-- Header Normal -->
+            <controls:StandardHeader x:Name="NormalHeader"
+                                   Title="Lista de Contagem"
+                                   ShowBackButton="True"
+                                   BackClicked="OnBackClicked"
+                                   IsVisible="{Binding IsSelectionMode, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <!-- Header de Seleção -->
+            <Border Stroke="#E0E0E0"  StrokeThickness="1" IsVisible="{Binding IsSelectionMode}">
+                
+                <Border.Shadow>
+                    <Shadow Brush="Gray"
+                    Offset="2,4"
+                    Opacity="0.5" />
+                </Border.Shadow>
+                <Grid x:Name="SelectionHeader"
+                  IsVisible="{Binding IsSelectionMode}"
+                  BackgroundColor="#F2F2F2"
+                  Padding="15,10">
+
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Info do item selecionado -->
+                <ImageButton Grid.Column="0"
+                       Source="arrow_back"
+                       HeightRequest="24"
+                       WidthRequest="24"
+                       BackgroundColor="Transparent"
+                     Command="{Binding ClearSelectionCommand}" />
+
+                <!-- Botão Compartilhar -->
+                <StackLayout Grid.Column="1"  
+                             Orientation="Horizontal" 
+                             HorizontalOptions="Center"  
+                             Margin="30,0,0,0"
+                             >
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnShareButtonClicked" />
+                    </StackLayout.GestureRecognizers>
+                    <Label
+                        Grid.Column="0"
+                        VerticalOptions="Center"
+                        Text="Compartilhar"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource PrimaryColor}"
+                        BackgroundColor="Transparent" />
+
+                    <ImageButton x:Name="btnCompartinhar" 
+                         Grid.Column="1"
+                         Source="share"                             
+                         HeightRequest="22"
+                         WidthRequest="30"
+                         VerticalOptions="Center"
+                         BackgroundColor="Transparent"/>
+
+                </StackLayout>
+
+                <!-- Botão Enviar (apenas em "Em andamento") -->
+
+                <StackLayout Grid.Column="2" 
+                             Orientation="Horizontal" 
+                             HorizontalOptions="Center"
+                             IsEnabled="{Binding CanSend}"  
+                             IsVisible="{Binding IsEmAndamentoTabSelected}"
+                              Margin="40,0,0,0"
+                             >
+
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer   Command="{Binding SendContagemCommand}"
+                         CommandParameter="{Binding SelectedContagem}"
+                         Tapped="OnShareButtonClicked" />
+                    </StackLayout.GestureRecognizers>
+                    <Label
+                         Grid.Column="0"
+                         VerticalOptions="Center"
+                         Text="Enviar"
+                         FontSize="16"
+                         FontAttributes="Bold"
+                         TextColor="{StaticResource PrimaryColor}"
+                         BackgroundColor="Transparent" />
+
+                    <ImageButton x:Name="btnEnviar" 
+                          Grid.Column="1"
+                          Source="send"                             
+                          HeightRequest="22"
+                          WidthRequest="30"
+                          VerticalOptions="Center"
+                          BackgroundColor="Transparent"/>
+
+                </StackLayout>
+
+            </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Campo de Pesquisa -->
+        <StackLayout Grid.Row="1" 
+                   BackgroundColor="{StaticResource BackgroundColor}" 
+                   Padding="20,15"
+                   Spacing="10">
+
+            <Border Style="{StaticResource EntryBorderStyle}" Margin="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry x:Name="SearchEntry"
+                           Grid.Column="0"
+                           Style="{StaticResource SearchEntryStyle}"
+                           Placeholder="Digite atividade, data ou ID"
+                           Text="{Binding SearchText}"
+                           TextChanged="OnSearchTextChanged" />
+
+                    <ImageButton x:Name="SearchIcon"
+                               Grid.Column="1"
+                               Source="search"
+                               HeightRequest="24"
+                               WidthRequest="24"
+                               BackgroundColor="Transparent" />
+                </Grid>
+            </Border>
+        </StackLayout>
+
+        <!-- Tabs -->
+        <Grid Grid.Row="2" 
+              BackgroundColor="{StaticResource BackgroundColor}"
+              Padding="20,0,20,0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="2" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Tab Em andamento -->
+            <StackLayout Grid.Row="0" Grid.Column="0" 
+                        BackgroundColor="{Binding IsEmAndamentoTabSelected, Converter={StaticResource BoolToTabBackgroundConverter}}"
+                        Padding="0,15">
+
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EmAndamentoTabCommand}" />
+                </StackLayout.GestureRecognizers>
+
+                <Label Text="Em andamento"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       FontAttributes="{Binding IsEmAndamentoTabSelected, Converter={StaticResource BoolToFontAttributesConverter}}"
+                       TextColor="{Binding IsEmAndamentoTabSelected, Converter={StaticResource BoolToTabTextColorConverter}}" />
+            </StackLayout>
+
+            <!-- Tab Enviadas -->
+            <StackLayout Grid.Row="0" Grid.Column="1" 
+                        BackgroundColor="{Binding IsEnviadasTabSelected, Converter={StaticResource BoolToTabBackgroundConverter}}"
+                        Padding="0,15">
+
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EnviadasTabCommand}" />
+                </StackLayout.GestureRecognizers>
+
+                <Label Text="Enviadas"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       FontAttributes="{Binding IsEnviadasTabSelected, Converter={StaticResource BoolToFontAttributesConverter}}"
+                       TextColor="{Binding IsEnviadasTabSelected, Converter={StaticResource BoolToTabTextColorConverter}}" />
+            </StackLayout>
+
+            <!-- Linha inferior Tab Em andamento -->
+            <BoxView Grid.Row="1" Grid.Column="0"
+                     BackgroundColor="{Binding IsEmAndamentoTabSelected, Converter={StaticResource BoolToTabBorderConverter}}"
+                     HeightRequest="2"
+                     HorizontalOptions="Fill" />
+
+            <!-- Linha inferior Tab Enviadas -->
+            <BoxView Grid.Row="1" Grid.Column="1"
+                     BackgroundColor="{Binding IsEnviadasTabSelected, Converter={StaticResource BoolToTabBorderConverter}}"
+                     HeightRequest="2"
+                     HorizontalOptions="Fill" />
+
+            <!-- Linha de separação geral -->
+            <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                     BackgroundColor="{StaticResource BorderColor}"
+                     HeightRequest="1"
+                     HorizontalOptions="Fill"
+                     VerticalOptions="End" />
+        </Grid>
+
+        <!-- Conteúdo das Tabs -->
+        <Grid Grid.Row="3" BackgroundColor="{StaticResource BackgroundColor}">
+
+            <!-- Lista Em Andamento -->
+            <CollectionView x:Name="EmAndamentoCollectionView"
+                          ItemsSource="{Binding ContagensEmAndamento}"
+                          SelectionMode="None"
+                          BackgroundColor="Transparent"
+                          Margin="20,0,20,20"
+                          IsVisible="{Binding IsEmAndamentoTabSelected}">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="0,4">
+                            <!-- SwipeView para ações -->
+                            <SwipeView>
+                                <!-- Swipe da Esquerda - Editar -->
+                                <SwipeView.LeftItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Editar"
+                                                   BackgroundColor="#007ACC"
+                                                   IconImageSource="edit_square"  
+                                                   Command="{Binding BindingContext.EditContagemCommand, Source={x:Reference EmAndamentoCollectionView}}"
+                                                   CommandParameter="{Binding}" />
+                                    </SwipeItems>
+                                </SwipeView.LeftItems>
+
+                                <!-- Swipe da Direita - Menu de Ações -->
+                                <SwipeView.RightItems>
+                                    <SwipeItems Mode="Reveal">
+                                 
+                                        <SwipeItem Text="Excluir"
+                                                   BackgroundColor="#E74C3C"
+                                                   IconImageSource="delete"
+                                                   
+                                                   Command="{Binding BindingContext.DeleteContagemCommand, Source={x:Reference EmAndamentoCollectionView}}"
+                                                   CommandParameter="{Binding}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+
+                                <!-- Conteúdo principal do item -->
+                                <Border BackgroundColor="{StaticResource WhiteColor}"
+                                        Stroke="#E0E0E0"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="15,12">
+
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer  Tapped="OnContagemItemTapped" />
+                                    </Border.GestureRecognizers>
+
+                                    <StackLayout Spacing="4">
+                                        <Label FontSize="16"
+                                               TextColor="{StaticResource TextColor}"
+                                               VerticalOptions="Center">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding Codigo}" />
+                                                    <Span Text=" - " />
+                                                    <Span Text="{Binding DataHora, StringFormat='{0:dd/MM/yyyy}'}" />
+                                                    <Span Text=" | " />
+                                                    <Span Text="{Binding QuantidadeItens}" />
+                                                    <Span Text=" produtos" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+
+                                        <Label Text="{Binding Atividade.Nome, FallbackValue='Inventário'}"
+                                               FontSize="14"
+                                               TextColor="#757575" />
+                                    </StackLayout>
+                                </Border>
+                            </SwipeView>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Empty View Em Andamento -->
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="20" Spacing="10" IsVisible="{Binding IsEmAndamentoTabSelected}">
+                        <Label Text="📋"
+                               FontSize="48"
+                               HorizontalOptions="Center"
+                               Opacity="0.5" />
+                        <Label Text="Nenhuma contagem em andamento"
+                               FontSize="16"
+                               TextColor="#757575"
+                               HorizontalOptions="Center" />
+                        <Label Text="Use o botão + para criar uma nova contagem"
+                               FontSize="14"
+                               TextColor="#757575"
+                               HorizontalOptions="Center" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+            <!-- Lista Enviadas -->
+            <CollectionView x:Name="EnviadasCollectionView"
+                          ItemsSource="{Binding ContagensEnviadas}"
+                          SelectionMode="None"
+                          BackgroundColor="Transparent"
+                          Margin="20,0,20,20"
+                          IsVisible="{Binding IsEnviadasTabSelected}">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="0,4">
+                            <!-- SwipeView apenas com compartilhamento -->
+                            <SwipeView>
+                                <!-- Swipe da Direita - Apenas Compartilhamento -->
+                                <SwipeView.RightItems>
+                                    <SwipeItems Mode="Reveal">
+                                        <SwipeItem Text="Excel"
+                                                   BackgroundColor="#1D6F42"
+                                                   IconImageSource="excel_white"
+                                                   Command="{Binding BindingContext.ShareExcelCommand, Source={x:Reference EnviadasCollectionView}}"
+                                                   CommandParameter="{Binding}" />
+                                        <SwipeItem Text="PDF"
+                                                   BackgroundColor="#D32F2F"
+                                                   IconImageSource="pdf_white"
+                                                   Command="{Binding BindingContext.SharePdfCommand, Source={x:Reference EnviadasCollectionView}}"
+                                                   CommandParameter="{Binding}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+
+                                <!-- Conteúdo principal do item -->
+                                <Border BackgroundColor="{StaticResource WhiteColor}"
+                                        Stroke="#E0E0E0"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="15,12">
+
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnContagemEnviadaItemTapped" />
+                                    </Border.GestureRecognizers>
+
+                                    <Grid ColumnDefinitions="*,Auto">
+
+                                        <!-- Informações da contagem -->
+                                        <StackLayout Grid.Column="0" Spacing="4">
+                                            <Label FontSize="16"
+                                                   TextColor="{StaticResource TextColor}"
+                                                   VerticalOptions="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Codigo}" />
+                                                        <Span Text=" - " />
+                                                        <Span Text="{Binding DataHora, StringFormat='{0:dd/MM/yyyy}'}" />
+                                                        <Span Text=" | " />
+                                                        <Span Text="{Binding QuantidadeItens}" />
+                                                        <Span Text=" produtos" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+
+                                            <Label Text="{Binding Atividade.Nome, FallbackValue='Inventário'}"
+                                                   FontSize="14"
+                                                   TextColor="#757575" />
+                                        </StackLayout>
+
+                                        <!-- Ícone de Enviado -->
+                                        <Border Grid.Column="1"
+                                                BackgroundColor="#27AE60"
+                                                StrokeShape="RoundRectangle 16"
+                                                WidthRequest="32"
+                                                HeightRequest="32"
+                                                Stroke="Transparent">
+
+                                            <Image Source="arrow_up_white"
+                                                   WidthRequest="20"
+                                                   HeightRequest="20" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </SwipeView>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Empty View Enviadas -->
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="20" Spacing="10" IsVisible="{Binding IsEnviadasTabSelected}">
+                        <Label Text="✅"
+                               FontSize="48"
+                               HorizontalOptions="Center"
+                               Opacity="0.5" />
+                        <Label Text="Nenhuma contagem enviada"
+                               FontSize="16"
+                               TextColor="#757575"
+                               HorizontalOptions="Center" />
+                        <Label Text="As contagens enviadas aparecerão aqui"
+                               FontSize="14"
+                               TextColor="#757575"
+                               HorizontalOptions="Center" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Grid BackgroundColor="Black"
+              Opacity="0.4"
+              IsVisible="{Binding IsLoading}"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill"
+              Grid.RowSpan="5">
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                      Color="White"
+                      VerticalOptions="Center"
+                      HorizontalOptions="Center" />
+        </Grid>
+
+        <!-- Sending Overlay -->
+        <Grid BackgroundColor="Black"
+              Opacity="0.6"
+              IsVisible="{Binding IsSending}"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill"
+              Grid.RowSpan="5">
+            <StackLayout VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        Spacing="15">
+                <ActivityIndicator IsRunning="{Binding IsSending}"
+                          Color="White"
+                          Scale="1.5" />
+                <Label Text="{Binding StatusMessage}"
+                       TextColor="White"
+                       FontSize="16"
+                       HorizontalOptions="Center" />
+            </StackLayout>
+        </Grid>
+
+        <!-- Botão Flutuante - Criar Nova Contagem -->
+        <Border x:Name="CreateFloatingButton"
+                StrokeShape="RoundRectangle 30"
+                BackgroundColor="Black"
+                Stroke="Transparent"
+                WidthRequest="60"
+                HeightRequest="60"
+                VerticalOptions="End"
+                HorizontalOptions="End"
+                Margin="0,0,20,30"
+                Grid.Row="4">
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CreateNewContagemCommand}" />
+            </Border.GestureRecognizers>
+
+            <Image Source="add"
+                   BackgroundColor="Transparent"
+                   WidthRequest="30"
+                   HeightRequest="30" />
+        </Border>
+    </Grid>
+</ContentPage>
