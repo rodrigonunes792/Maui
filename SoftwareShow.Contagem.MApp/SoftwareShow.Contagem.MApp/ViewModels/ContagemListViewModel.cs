@@ -334,7 +334,7 @@ namespace SoftwareShow.Contagem.MApp.ViewModels
             {
                 StatusMessage = "Abrindo editor...";
                 await Task.Delay(500); // Feedback visual
-                ContagemItemPage.ContagemParaEditar = contagem;
+               // ContagemItemPage.ContagemParaEditar = contagem;
                 await Shell.Current.GoToAsync("//ContagemItemPage");
                 StatusMessage = string.Empty;
             }
